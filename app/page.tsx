@@ -1,103 +1,79 @@
-import Image from "next/image";
+import Link from "next/link";
+import {motion} from "framer-motion";
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      {/* Hero Section - IntelliShop Brand First */}
+      <section className="relative w-full min-h-[85vh] flex flex-col justify-center items-center text-center px-6 bg-gradient-to-b from-primary/20 to-background">
+        <h1 className="text-6xl md:text-7xl font-extrabold mb-4 text-primary">
+          IntelliShop
+        </h1>
+        <p className="text-lg md:text-xl max-w-2xl text-muted-foreground mb-8">
+          Smart Shopping. Smarter Management.
+        </p>
+        <div className="flex gap-4">
+          <button className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium shadow-lg hover:scale-105 transition-transform">
+            <Link href="/login">Get Started</Link>
+          </button>
+          <button className="px-6 py-3 rounded-xl bg-accent text-accent-foreground font-medium shadow-lg hover:scale-105 transition-transform">
+            Learn More
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="absolute bottom-0 w-full h-24 bg-gradient-to-t from-background to-transparent"></div>
+      </section>
+
+      {/* About IntelliShop */}
+      <section id="features" className="py-20 px-6 md:px-16 bg-card text-card-foreground">
+        
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="text-4xl font-semibold mb-6">About IntelliShop</h2>
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              IntelliShop is your one-stop platform that bridges customers and shop owners. 
+              Customers enjoy seamless shopping, real-time tracking, and personalized experiences, 
+              while shop owners gain advanced tools to manage products, employees, and orders—all in one place.
+            </p>
+            <ul className="space-y-4 text-muted-foreground">
+              <li>✔️ Easy inventory & order management</li>
+              <li>✔️ Real-time customer shopping experience</li>
+              <li>✔️ Tools that save time and reduce errors</li>
+            </ul>
+          </div>
+          <div className="rounded-2xl shadow-xl bg-muted h-80 flex items-center justify-center">
+            <span className="text-xl text-muted-foreground">[Product Mockup / Illustration]</span>
+          </div>
+        </div>
+      </section>
+
+      {/* About Nymera (mirroring IntelliShop format) */}
+      <section id="about-Nymera" className="py-20 px-6 md:px-16 bg-background text-foreground">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          {/* Illustration on left for contrast */}
+          <div className="rounded-2xl shadow-xl bg-muted h-80 w-80 flex items-center justify-center">
+            <span className="text-xl text-muted-foreground">
+              <img 
+                src="./Nymera_Light.png" 
+                alt="Nymera Logo"
+                className="rounded-2xl max-h-80 max-w-100"/>
+            </span>
+          </div>
+          <div className="order-1 md:order-2">
+            <h2 className="text-4xl font-semibold mb-6">About Nymera</h2>
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              Founded by <span className="font-medium text-primary">Harsh Dushyantbhai Pandya</span>, 
+              Nymera is dedicated to crafting innovative digital products 
+              that reduce human intervention, minimize errors, and unlock insights that go 
+              beyond human capabilities.
+            </p>
+            <ul className="space-y-4 text-muted-foreground">
+              <li>✔️ Innovative SaaS product development</li>
+              <li>✔️ Focus on automation & efficiency</li>
+              <li>✔️ Mission to help businesses save time & grow</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

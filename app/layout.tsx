@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,44 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <Toaster richColors position="top-center" />
+        {/* Footer */}
+      <footer className="bg-foreground text-background py-10 px-6 md:px-16">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
+          <div>
+            <h3 className="font-semibold mb-4">IntelliShop</h3>
+            <p className="text-sm text-muted bg-opacity-70">
+              Smart shopping & management—powered by Nymera.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-4">Company</h4>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#about-Nymera" className="hover:text-primary">About</a></li> { /*TODO: replace the link to actual place where the company description is....*/}
+              <li><a href="#" className="hover:text-primary">Careers</a></li>
+              <li><a href="/contact" className="hover:text-primary">Contact</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-4">Product</h4>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#" className="hover:text-primary">Features</a></li>
+              <li><a href="#" className="hover:text-primary">Pricing</a></li>
+              <li><a href="#" className="hover:text-primary">FAQ</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-4">Legal</h4>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#" className="hover:text-primary">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-primary">Terms of Service</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-t border-border mt-8 pt-6 text-center text-sm">
+          © {new Date().getFullYear()} Nymera. All rights reserved.
+        </div>
+      </footer>
       </body>
     </html>
   );

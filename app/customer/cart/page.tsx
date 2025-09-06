@@ -1,0 +1,205 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+interface CartItem {
+  productName: string;
+  quantity: number;
+  price: number;
+  totalPrice: number;
+}
+
+export default function CartPage() {
+  const router = useRouter();
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    setLoading(true);
+
+    fetch("http://localhost:8080/cart", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.success) {
+          setCart(response.data);
+        } else {
+          console.error("Failed to fetch cart:", response.message);
+        }
+      })
+      .catch(() => {
+        setCart([
+          {
+            productName: "Luxury Leather Jacket",
+            price: 249.99,
+            quantity: 1,
+            totalPrice: 249.99,
+          },
+        ]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const updateQuantity = (productName: string, delta: number) => {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.productName === productName
+          ? {
+              ...item,
+              quantity: Math.max(1, item.quantity + delta),
+              totalPrice: item.price * Math.max(1, item.quantity + delta),
+            }
+          : item
+      )
+    );
+  };
+
+  const removeItem = (productName: string) => {
+    setCart((prev) => prev.filter((item) => item.productName !== productName));
+  };
+
+  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white">
+        <img
+          src="/EmptyCart.png"
+          alt="Empty Cart"
+          className="ml-450 w-32 md:w-40 *mb-6 opacity-70"
+        />
+        <h2 className="text-2xl font-semibold text-yellow-500 mb-4">
+          Your cart is empty
+        </h2>
+        <Button
+          className="bg-yellow-500 text-black rounded-2xl hover:opacity-90"
+          onClick={() => router.push("/customer/browse-shop")}
+        >
+          Browse Shops
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-12">
+      <h1 className="text-3xl font-bold text-yellow-500 text-center mb-10">
+        My Cart
+      </h1>
+
+      <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        {/* Left: Cart Items */}
+        <div className="md:col-span-2 space-y-6">
+          {cart.map((item, index) => (
+            <motion.div
+              key={item.productName}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+            >
+              <Card className="bg-gray-900 border border-gray-700 rounded-2xl shadow-md p-4 flex items-center gap-4">
+                {/* Product Image */}
+                <img
+                  src="https://via.placeholder.com/100x100.png?text=Product"
+                  alt={item.productName}
+                  className="w-24 h-24 object-cover rounded-xl border border-gray-700"
+                />
+
+                {/* Details */}
+                <CardContent className="flex-1">
+                  <h2 className="font-semibold text-lg text-white mb-2">
+                    {item.productName}
+                  </h2>
+                  <p className="text-yellow-500 font-medium mb-3">
+                    ₹{item.price.toFixed(2)}
+                  </p>
+
+                  {/* Quantity Selector */}
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      className="rounded-2xl border-gray-700 text-white"
+                      onClick={() => updateQuantity(item.productName, -1)}
+                    >
+                      -
+                    </Button>
+                    <span className="px-2">{item.quantity}</span>
+                    <Button
+                      variant="outline"
+                      className="rounded-2xl border-gray-700 text-white"
+                      onClick={() => updateQuantity(item.productName, 1)}
+                    >
+                      +
+                    </Button>
+                  </div>
+                </CardContent>
+
+                {/* Subtotal + Remove */}
+                <div className="flex flex-col items-end gap-3">
+                  <p className="text-yellow-400 font-semibold">
+                    ₹{(item.price * item.quantity).toFixed(2)}
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                    onClick={() => removeItem(item.productName)}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Right: Summary */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="bg-gray-900 border border-gray-700 rounded-2xl shadow-lg p-6 sticky top-20">
+            <h2 className="text-xl font-bold text-yellow-500 mb-4">
+              Order Summary
+            </h2>
+            <div className="space-y-2 text-gray-300 mb-6">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>₹{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Taxes & Fees</span>
+                <span>₹{(subtotal * 0.05).toFixed(2)}</span>
+              </div>
+              <div className="border-t border-gray-700 pt-3 flex justify-between text-yellow-400 font-semibold">
+                <span>Total</span>
+                <span>₹{(subtotal * 1.05).toFixed(2)}</span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <Button className="w-full bg-yellow-500 text-black rounded-2xl hover:opacity-90 mb-3">
+              Proceed to Checkout
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full border-yellow-500 text-yellow-500 rounded-2xl hover:bg-yellow-500 hover:text-black"
+              onClick={() => router.push("/customer/browse-shop")}
+            >
+              Continue Shopping
+            </Button>
+          </Card>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
