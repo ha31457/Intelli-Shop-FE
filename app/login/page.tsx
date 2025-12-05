@@ -27,18 +27,20 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
+      if (!res.ok) throw new Error("Signup failed");
       const { success, message, data } = await res.json();
       console.log(data)
-      if (!res.ok) throw new Error("Signup failed");
       if(success){
         console.log("Login successful, token stored:", data);
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("role", data.role);
+        localStorage.setItem("token", data.token);
+        const encryptedrole = btoa(data.role); // Simple base64 encoding for demonstration
+        localStorage.setItem("_rle", encryptedrole);
+        const actualRole = atob(localStorage.getItem("_rle") || "");
         toast.success(message);
-        //TODO: setup some logic to redirect owners to owner-dashboard and users to dashboard
-        if(data.role === "OWNER"){
+        if(actualRole === "OWNER"){
           setTimeout(() => router.push("/owner/dashboard"), 500);
-        }else if(data.role === "CUSTOMER"){
+        }else if(actualRole === "CUSTOMER"){
+          console.log("Redirecting to customer dashboard");
           setTimeout(() => router.push("/customer/dashboard"), 300);
         }
       }else{
