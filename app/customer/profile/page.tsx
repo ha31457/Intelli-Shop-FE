@@ -1,33 +1,97 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+
 
 export default function ProfilePage() {
-  const [name, setName] = useState("John Doe")
-  const [email] = useState("john@example.com") // fixed, not editable
-  const [phone, setPhone] = useState("9876543210")
+  const [name, setName] = useState("Your name")
+  const [email, setEmail] = useState("Your email") // fixed, not editable
+  const [phone, setPhone] = useState("Your phone number")
   const [address, setAddress] = useState("New Delhi, India")
-  const [password, setPassword] = useState("")
   const router = useRouter()
 
   const handleSave = () => {
-    toast.success("Profile updated successfully!")
+    const payload = {
+      name,
+      phone,
+      address,
+      role: "CUSTOMER",      
+      shopId: null,
+    }
+    const id = localStorage.getItem("id")
+
+    const resp = fetch(`http://localhost:8080/user/update/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.success) {
+          toast.success("Profile updated successfully")
+          console.log(response.data)
+        } else {
+          toast.error("Failed to update profile: " + response.message)
+        }
+      })
+      .catch(() => {
+        toast.error("Failed to update profile. Please try again.")
+      })
   }
 
   const handleLogout = async () =>{
-    sessionStorage.removeItem("token")
-    sessionStorage.removeItem("role")
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
     toast.success("Logged out successfully")
     setTimeout((): void => {
+      localStorage.removeItem("id")
       router.push("/login")
     }, 500)
   }
+
+  useEffect(() => {
+    // Fetch user profile from backend API and set state
+    const fetchProfile = async () => {
+      let user = null
+      try {
+        const res = await fetch("http://localhost:8080/getUser", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        const data = await res.json()
+        user = data.data
+        if (user) {
+          localStorage.setItem("id", user.id)
+          setName(user.name || "")
+          setEmail(user.email || "")
+          setPhone(user.phone || "")
+          setAddress(user.address || "")
+        } else {
+          toast.error("Failed to load user profile.")
+          setTimeout(() => {localStorage.removeItem("id"), router.push("/login"), 600});
+        }
+      } catch {
+        toast.error("Failed to load user profile.")
+        setTimeout(() => {localStorage.removeItem("id"), router.push("/login"), 600});
+      }
+    }
+    fetchProfile()
+  }, [])
+
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -44,19 +108,19 @@ export default function ProfilePage() {
             <ul className="flex gap-6 text-gray-300">
                 <li
                 className="hover:text-yellow-500 cursor-pointer"
-                onClick={() => router.push("/shops")}
+                onClick={() => router.push("/customer/browse-shop")}
                 >
                 Browse Shops
                 </li>
                 <li
                 className="hover:text-yellow-500 cursor-pointer"
-                onClick={() => router.push("/orders")}
+                onClick={() => router.push("/customer/orders")}
                 >
                 My Orders
                 </li>
                 <li
                 className="hover:text-yellow-500 cursor-pointer"
-                onClick={() => router.push("/cart")}
+                onClick={() => router.push("/customer/cart")}
                 >
                 Cart
                 </li>
@@ -111,15 +175,6 @@ export default function ProfilePage() {
             <div>
               <label className="block text-sm font-medium mb-1">Address</label>
               <Input value={address} onChange={(e) => setAddress(e.target.value)} />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Change Password</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
             </div>
 
             <Button onClick={handleSave} className="w-full">
