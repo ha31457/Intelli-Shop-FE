@@ -42,8 +42,8 @@ export default function SignupPage() {
         setLoading(false)
         toast.success(message)
 
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("role", data.role);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
         
         if(role === "OWNER"){
           setTimeout(() => router.push("/register-shop"), 400);

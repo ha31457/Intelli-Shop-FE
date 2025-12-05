@@ -14,7 +14,7 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
   const router = useRouter()
 
   useEffect(() => {
-    const role = sessionStorage.getItem("role")
+    const role = atob(localStorage.getItem("_rle") || "") 
 
     if (!role) {
       // Not logged in → redirect to login

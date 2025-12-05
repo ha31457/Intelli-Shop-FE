@@ -54,7 +54,7 @@ export default function OwnerShopProfilePage() {
   );
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     // Fetch current shop profile (owner's shop)
     fetch("http://localhost:8080/owner/shop", {
@@ -106,7 +106,7 @@ export default function OwnerShopProfilePage() {
     }
 
     setSaving(true);
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     try {
       // If your backend expects multipart for images:
