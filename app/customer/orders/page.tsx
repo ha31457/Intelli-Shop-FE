@@ -12,6 +12,10 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
+import { toast } from "sonner"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+
 
 interface Item {
   productId: number;
@@ -35,7 +39,7 @@ export default function OrdersPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     fetch("http://localhost:8080/api/get-orders", {
       method: "GET",
@@ -93,10 +97,6 @@ export default function OrdersPage() {
     }
   };
 
-  const handleViewOrder = (order : Order) => {
-    router.push(`/customer/orders/${order.orderId}`)
-  }
-
   const renderOrders = (orders: Order[]) =>
     orders.map((order, index) => {
       const firstItem = order.items[0];
@@ -139,15 +139,83 @@ export default function OrdersPage() {
               >
                 {order.status}
               </Badge>
-              <Button className="m-5 rounded-xl" onClick={() => handleViewOrder(order)}>View Order</Button>
             </CardContent>
           </Card>
         </motion.div>
       );
     });
 
+    const handleLogout = async () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
+    toast.success("Logged out successfully")
+    setTimeout((): void => {
+      router.push("/login")
+    }, 500)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-8 py-12">
+      <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
+            <h1
+            className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
+            onClick={function () {
+                return router.push("/")
+            }}
+            >
+            IntelliShop
+            </h1>
+            <nav>
+            <ul className="flex gap-6 text-gray-300">
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/browse-shop")}
+                >
+                Browse Shops
+                </li>
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/orders")}
+                >
+                My Orders
+                </li>
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/cart")}
+                >
+                Cart
+                </li>
+                <li>    
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Avatar className="cursor-pointer">
+                            <AvatarImage src="/Profile.png" />
+                            </Avatar>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="w-56 p-2">
+                          
+                            <DropdownMenuItem onClick={() => router.push("/customer/dashboard")}>
+                            Dashboard
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push("/customer/orders")}>
+                            My Orders
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem onClick={() => router.push("/customer/profile")}>
+                            Update Details
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                            Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </li>
+            </ul>
+            </nav>
+        </header>
       <h1 className="text-3xl text-yellow-500 font-bold mb-10 text-center">
         My Orders
       </h1>

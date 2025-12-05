@@ -7,10 +7,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
+import { toast } from "sonner"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation";
 
-const router = useRouter();
+
 
 interface Product {
   id: number;
@@ -20,11 +22,13 @@ interface Product {
   stock: number;
   image?: string;
 }
+
 //TODO: Match the product interface with backend response
 export default function ProductDetailsPage() {
+  // const router = useRouter();
   const searchParams = useSearchParams();
   const productParam = searchParams.get("product");
-
+  const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
 
@@ -47,7 +51,7 @@ export default function ProductDetailsPage() {
   }
 
   const handleAddToCart = async (product: Product, quantity: number) => {
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   try {
     const res = await fetch("http://localhost:8080/cart/add", {
@@ -77,9 +81,77 @@ export default function ProductDetailsPage() {
   }
 };
 
+  const handleLogout = async () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
+    toast.success("Logged out successfully")
+    setTimeout((): void => {
+      router.push("/login")
+    }, 500)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-12">
+      <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
+            <h1
+            className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
+            onClick={function () {
+                return router.push("/")
+            }}
+            >
+            IntelliShop
+            </h1>
+            <nav>
+            <ul className="flex gap-6 text-gray-300">
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/browse-shop")}
+                >
+                Browse Shops
+                </li>
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/orders")}
+                >
+                My Orders
+                </li>
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/cart")}
+                >
+                Cart
+                </li>
+                <li>    
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Avatar className="cursor-pointer">
+                            <AvatarImage src="/Profile.png" />
+                            </Avatar>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="w-56 p-2">
+                          
+                            <DropdownMenuItem onClick={() => router.push("/customer/dashboard")}>
+                            Dashboard
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push("/customer/orders")}>
+                            My Orders
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem onClick={() => router.push("/customer/profile")}>
+                            Update Details
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                            Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </li>
+            </ul>
+            </nav>
+        </header>
       {/* Product Showcase */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

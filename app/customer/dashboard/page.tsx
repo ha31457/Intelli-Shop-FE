@@ -20,13 +20,14 @@ export default function DashboardPage() {
     const response = fetch("http://localhost:8080/getUser", {
         method: "GET",
         headers: {
-            "Authorization": `Bearer ${sessionStorage.getItem("token")}`
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
     }).then(res => res.json())
     .then(response => {
         if(response.success){ 
-            setCustomerName(response.data.name) 
-            sessionStorage.setItem("user", JSON.stringify(response.data))
+            setCustomerName(response.data.name)
+            // cookieStore.set("role", "CUSTOMER") this is how to set role in cookie 
+            // cookieStore.get("role").then(res => console.log("role from cookie: ", res?.value)) this is how to get role from cookie
         }else{
             toast.error("Session expired. Please login again.") 
             setTimeout(() => router.push("/login"), 500)
@@ -35,8 +36,8 @@ export default function DashboardPage() {
   }, [])
 
   const handleLogout = async () =>{
-    sessionStorage.removeItem("token")
-    sessionStorage.removeItem("role")
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
     toast.success("Logged out successfully")
     setTimeout((): void => {
       router.push("/login")

@@ -8,6 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+
 
 interface Shop {
   id: number;
@@ -46,7 +50,7 @@ export default function ShopDetailsPage() {
       }
     }
 
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     // Fetch products only
     fetch(`http://localhost:8080/${id}/products`, {
@@ -96,8 +100,77 @@ export default function ShopDetailsPage() {
     product.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleLogout = async () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
+    toast.success("Logged out successfully")
+    setTimeout((): void => {
+      router.push("/login")
+    }, 500)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-8 py-12">
+      <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
+            <h1
+            className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
+            onClick={function () {
+                return router.push("/")
+            }}
+            >
+            IntelliShop
+            </h1>
+            <nav>
+            <ul className="flex gap-6 text-gray-300">
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/browse-shop")}
+                >
+                Browse Shops
+                </li>
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/orders")}
+                >
+                My Orders
+                </li>
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/cart")}
+                >
+                Cart
+                </li>
+                <li>    
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Avatar className="cursor-pointer">
+                            <AvatarImage src="/Profile.png" />
+                            </Avatar>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="w-56 p-2">
+                          
+                            <DropdownMenuItem onClick={() => router.push("/customer/dashboard")}>
+                            Dashboard
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push("/customer/orders")}>
+                            My Orders
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem onClick={() => router.push("/customer/profile")}>
+                            Update Details
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                            Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </li>
+            </ul>
+            </nav>
+        </header>
       {shop ? (
         <>
           {/* Shop Info */}
@@ -158,9 +231,6 @@ export default function ShopDetailsPage() {
                       </p>
                       <Button className="mt-4 w-full rounded-xl bg-yellow-400 hover:opacity-90 transition" onClick={handleViewProduct.bind(null, product)}>
                         View Details
-                      </Button>
-                      <Button className="mt-4 w-full rounded-xl bg-yellow-500 hover:opacity-90 transition">
-                        Add to Cart
                       </Button>
                     </CardContent>
                   </Card>
