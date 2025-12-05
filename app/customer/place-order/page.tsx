@@ -5,7 +5,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "sonner"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+
 
 interface CartItem {
   id: number;
@@ -17,30 +20,41 @@ interface CartItem {
 //TODO: Refactor the things to match the backend structure.
 export default function PlaceOrderPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [address, setAddress] = useState<String>("");
+  const [address, setAddress] = useState<string>("");
   const [deliveryMode, setDeliveryMode] = useState("Home Delivery");
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const router = useRouter();
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
-
-    // Fetch cart
-    fetch("http://localhost:8080/cart", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) setCart(res.data);
-      });
-
-    // Fetch addresses
-    const userString = sessionStorage.getItem("user");
-    if(userString){
-      const user = JSON.parse(userString);
-      setAddress(user.address || "");
+    // Fetch user profile from backend API and set state
+    const fetchProfile = async () => {
+      let user = null
+      try {
+        const res = await fetch("http://localhost:8080/getUser", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        const data = await res.json()
+        user = data.user
+      } catch {
+        toast.error("Failed to load user profile.")
+      }
+      if (user) {
+        if (user.address) {
+          setAddress(user.address)
+        } else {
+          setAddress("")
+          toast.error("Address is missing from your profile.")
+        }
+      } else {
+        toast.error("Failed to load user profile.")
+        setTimeout(() => router.push("/login"), 600);
+      }
     }
-  }, []);
+    fetchProfile()
+  }, [])
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shipping = deliveryMode === "Home Delivery" ? (subtotal > 1000 ? 0 : 50) : 0;
@@ -57,7 +71,7 @@ export default function PlaceOrderPage() {
       return;
     }
 
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     const res = await fetch("http://localhost:8080/api/place-order", {
       method: "POST",
@@ -82,8 +96,77 @@ export default function PlaceOrderPage() {
     }
   };
 
+  const handleLogout = async () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
+    toast.success("Logged out successfully")
+    setTimeout((): void => {
+      router.push("/login")
+    }, 500)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-8 py-12">
+      <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
+            <h1
+            className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
+            onClick={function () {
+                return router.push("/")
+            }}
+            >
+            IntelliShop
+            </h1>
+            <nav>
+            <ul className="flex gap-6 text-gray-300">
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/browse-shop")}
+                >
+                Browse Shops
+                </li>
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/orders")}
+                >
+                My Orders
+                </li>
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/cart")}
+                >
+                Cart
+                </li>
+                <li>    
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Avatar className="cursor-pointer">
+                            <AvatarImage src="/Profile.png" />
+                            </Avatar>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="w-56 p-2">
+                          
+                            <DropdownMenuItem onClick={() => router.push("/customer/dashboard")}>
+                            Dashboard
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push("/customer/orders")}>
+                            My Orders
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem onClick={() => router.push("/customer/profile")}>
+                            Update Details
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                            Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </li>
+            </ul>
+            </nav>
+        </header>
       <h1 className="text-3xl text-yellow-500 font-bold mb-10 text-center">Place Order</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
