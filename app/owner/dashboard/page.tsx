@@ -6,6 +6,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner"
+import NotificationDrawer from "@/components/NotificationDrawer";
+
 
 export default function ShopDashboard() {
   const router = useRouter();
@@ -19,6 +22,24 @@ export default function ShopDashboard() {
   // Dummy fetch simulation (replace with backend call)
   useEffect(() => {
     // Here you will fetch shop stats from backend
+    // Fetch shop details from the backend localhost:8080/getShopDetails
+    const resp =  fetch("http://localhost:8080/getShopDetails", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    }).then((res) => res.json())
+    .then((data) => {
+      console.log("shop details : ", data);
+      localStorage.setItem("shopId", data.data.id);
+      localStorage.setItem("shopName", data.data.name);
+      localStorage.setItem("shopAddress", data.data.address);
+      toast.success("Shop details fetched successfully");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+    
     setStats({
       totalProducts: 42,
       totalOrders: 120,
@@ -26,18 +47,20 @@ export default function ShopDashboard() {
       revenue: 85000,
     });
   }, []);
-
+  
+  const ShopName = localStorage.getItem("shopName") || "Shop";
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black p-6 text-white">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Shop Dashboard</h1> //TODO: Replace with shop name from backend
+        <h1 className="text-3xl font-bold">{ShopName} Dashboard</h1> {/*TODO: Replace with shop name from backend*/}
         <Button
           variant="ghost"
           size="icon"
           className="rounded-full bg-gray-900 border border-gray-700 hover:bg-gray-800"
         >
-          <Bell className="h-6 w-6 text-yellow-500" />
+          {/* <Bell className="h-6 w-6 text-yellow-500" /> */}
+          <NotificationDrawer />
         </Button>
       </div>
 
@@ -93,7 +116,7 @@ export default function ShopDashboard() {
         <motion.div whileHover={{ scale: 1.05 }}>
           <Card
             className="bg-gray-900 border border-gray-700 rounded-2xl shadow-lg cursor-pointer hover:border-yellow-500"
-            onClick={() => router.push("/shop/products")}
+            onClick={() => router.push("/owner/products")}
           >
             <CardContent className="p-6 text-center">
               <h2 className="text-xl font-bold text-yellow-500 mb-2">Products</h2>
@@ -105,7 +128,7 @@ export default function ShopDashboard() {
         <motion.div whileHover={{ scale: 1.05 }}>
           <Card
             className="bg-gray-900 border border-gray-700 rounded-2xl shadow-lg cursor-pointer hover:border-yellow-500"
-            onClick={() => router.push("/shop/orders")}
+            onClick={() => router.push("/owner/orders")}
           >
             <CardContent className="p-6 text-center">
               <h2 className="text-xl font-bold text-yellow-500 mb-2">Orders</h2>
