@@ -11,8 +11,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 
+interface ProductDTO {
+  id: number
+  shopid: number
+  name: string
+  description: string
+  price: number
+  stock: number
+  low_stock_threshold: number
+}
+
 export default function DashboardPage() {
   const [customerName, setCustomerName] = useState("Customer")
+  const [products, setProducts] = useState<ProductDTO[]>([])
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   // Simulate fetching customer name (replace with backend API)
@@ -33,6 +45,34 @@ export default function DashboardPage() {
             setTimeout(() => router.push("/login"), 500)
         }
     })
+  }, [])
+
+  // Fetch dashboard products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch("http://localhost:8080/getDashboardProducts", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        })
+        const data = await response.json()
+        if (data.success && Array.isArray(data.data)) {
+          setProducts(data.data)
+        } else {
+          toast.error("Failed to load products")
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error)
+        toast.error("Error loading products")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
   }, [])
 
   const handleLogout = async () =>{
@@ -158,7 +198,7 @@ export default function DashboardPage() {
             ))}
         </section>
 
-        {/* Recommendations Section (Placeholder for future AI feature) */}
+        {/* Recommendations Section */}
         <motion.section
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -166,26 +206,30 @@ export default function DashboardPage() {
             className="px-12 mt-20 mb-12"
         >
             <h3 className="text-2xl font-bold text-yellow-500 mb-6">Recommended for You</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            <Card className="bg-gray-900 border border-gray-800 shadow-lg">
-                <CardContent className="p-6">
-                <h4 className="text-lg font-semibold text-yellow-500">Cool Sneakers</h4>
-                <p className="text-gray-400 mt-2">Based on your recent shopping</p>
-                </CardContent>
-            </Card>
-            <Card className="bg-gray-900 border border-gray-800 shadow-lg">
-                <CardContent className="p-6">
-                <h4 className="text-lg font-semibold text-yellow-500">Trendy Jacket</h4>
-                <p className="text-gray-400 mt-2">Winter collection for you</p>
-                </CardContent>
-            </Card>
-            <Card className="bg-gray-900 border border-gray-800 shadow-lg">
-                <CardContent className="p-6">
-                <h4 className="text-lg font-semibold text-yellow-500">Smart Watch</h4>
-                <p className="text-gray-400 mt-2">Tech picks just for you</p>
-                </CardContent>
-            </Card>
-            </div>
+            {loading ? (
+                <div className="text-center text-gray-400 py-8">Loading products...</div>
+            ) : products.length === 0 ? (
+                <div className="text-center text-gray-400 py-8">No products available at the moment.</div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {products.map((product) => (
+                        <Card key={product.id} className="bg-gray-900 border border-gray-800 shadow-lg hover:shadow-yellow-500/30 transition">
+                            <CardContent className="p-6">
+                                <h4 className="text-lg font-semibold text-yellow-500">{product.name}</h4>
+                                <p className="text-gray-400 mt-2 text-sm line-clamp-2">{product.description}</p>
+                                <div className="mt-4 flex items-center justify-between">
+                                    <span className="text-xl font-bold text-white">${product.price.toFixed(2)}</span>
+                                    {product.stock <= product.low_stock_threshold ? (
+                                        <span className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded-full">Low Stock</span>
+                                    ) : (
+                                        <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded">In Stock</span>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </motion.section>
         </div>
     </ProtectedRoute>
