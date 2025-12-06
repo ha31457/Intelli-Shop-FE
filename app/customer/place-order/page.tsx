@@ -111,7 +111,7 @@ export default function PlaceOrderPage() {
             <h1
             className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
             onClick={function () {
-                return router.push("/")
+                return router.push("/customer/dashboard")
             }}
             >
             IntelliShop
