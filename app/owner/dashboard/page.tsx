@@ -140,7 +140,7 @@ export default function ShopDashboard() {
         <motion.div whileHover={{ scale: 1.05 }}>
           <Card
             className="bg-gray-900 border border-gray-700 rounded-2xl shadow-lg cursor-pointer hover:border-yellow-500"
-            onClick={() => router.push("/shop/profile")}
+            onClick={() => router.push("/owner/shop/profile")}
           >
             <CardContent className="p-6 text-center">
               <h2 className="text-xl font-bold text-yellow-500 mb-2">Shop Profile</h2>
