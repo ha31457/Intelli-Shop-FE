@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 
 
 interface CartItem {
+  productId: number;
   productName: string;
   quantity: number;
   price: number;
@@ -43,20 +44,20 @@ export default function CartPage() {
       .catch(() => {
         setCart([
           {
+            productId: 1,
             productName: "Luxury Leather Jacket",
-            price: 249.99,
             quantity: 1,
+            price: 249.99,
             totalPrice: 249.99,
           },
         ]);
       })
       .finally(() => setLoading(false));
   }, []);
-
-  const updateQuantity = (productName: string, delta: number) => {
+  const updateQuantity = (productId: number, delta: number) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.productName === productName
+        item.productId === productId
           ? {
               ...item,
               quantity: Math.max(1, item.quantity + delta),
@@ -67,9 +68,25 @@ export default function CartPage() {
     );
   };
 
-  const removeItem = (productName: string) => {
-    toast.success("Item removed from cart successfully!");
-    setCart((prev) => prev.filter((item) => item.productName !== productName));
+  const removeItem = (productId: number) => {
+    fetch(`http://localhost:8080/cart/${productId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((res) => res.json())
+    .then((response) => {
+      if (response.success) {
+        toast.success("Item removed from cart successfully!");
+        setCart((prev) => prev.filter((item) => item.productId !== productId));
+      } else {
+        console.error("Failed to remove item from cart:", response.message);
+      }
+    })
+    .catch((error) => {
+      console.error("Error removing item from cart:", error);
+    });
   };
 
   const handleLogout = async () =>{
@@ -263,7 +280,7 @@ export default function CartPage() {
                     <Button
                       variant="outline"
                       className="rounded-2xl border-gray-700 text-white"
-                      onClick={() => updateQuantity(item.productName, -1)}
+                      onClick={() => updateQuantity(item.productId, -1)}
                     >
                       -
                     </Button>
@@ -271,7 +288,7 @@ export default function CartPage() {
                     <Button
                       variant="outline"
                       className="rounded-2xl border-gray-700 text-white"
-                      onClick={() => updateQuantity(item.productName, 1)}
+                      onClick={() => updateQuantity(item.productId, 1)}
                     >
                       +
                     </Button>
@@ -286,7 +303,7 @@ export default function CartPage() {
                   <Button
                     variant="outline"
                     className="rounded-2xl border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                    onClick={() => removeItem(item.productName)}
+                    onClick={() => removeItem(item.productId)}
                   >
                     Remove
                   </Button>
