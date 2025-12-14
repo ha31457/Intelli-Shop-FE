@@ -15,8 +15,6 @@ export default function ShopDashboard() {
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalOrders: 0,
-    pendingOrders: 0,
-    revenue: 0,
   });
 
   // Dummy fetch simulation (replace with backend call)
@@ -40,11 +38,24 @@ export default function ShopDashboard() {
       console.log(err);
     });
     
-    setStats({
-      totalProducts: 42,
-      totalOrders: 120,
-      pendingOrders: 5,
-      revenue: 85000,
+    // Fetch shop stats from the backend
+    fetch("http://localhost:8080/api/getShopStats", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("shop stats : ", data);
+      setStats({
+        totalProducts: data.data.totalProducts,
+        totalOrders: data.data.totalOrders,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      toast.error("Failed to fetch shop stats");
     });
   }, []);
   
@@ -83,28 +94,6 @@ export default function ShopDashboard() {
               <h2 className="text-lg text-gray-400">Total Orders</h2>
               <p className="text-3xl font-bold text-yellow-500 mt-2">
                 {stats.totalOrders}
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }}>
-          <Card className="bg-gray-900 border border-gray-700 rounded-2xl shadow-lg">
-            <CardContent className="p-6 text-center">
-              <h2 className="text-lg text-gray-400">Pending Orders</h2>
-              <p className="text-3xl font-bold text-yellow-500 mt-2">
-                {stats.pendingOrders}
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }}>
-          <Card className="bg-gray-900 border border-gray-700 rounded-2xl shadow-lg">
-            <CardContent className="p-6 text-center">
-              <h2 className="text-lg text-gray-400">Revenue</h2>
-              <p className="text-3xl font-bold text-yellow-500 mt-2">
-                ₹{stats.revenue.toLocaleString()}
               </p>
             </CardContent>
           </Card>
