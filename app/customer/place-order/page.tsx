@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner"
+import ProtectedRoute from "@/components/ProtectedRoute"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
@@ -106,7 +107,8 @@ export default function PlaceOrderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-8 py-12">
+    <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+      <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-8 pb-12">
       <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
             <h1
             className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
@@ -280,5 +282,6 @@ export default function PlaceOrderPage() {
         </Card>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

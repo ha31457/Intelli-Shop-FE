@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { toast } from "sonner"
+import ProtectedRoute from "@/components/ProtectedRoute"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation";
@@ -44,9 +45,11 @@ export default function ProductDetailsPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-gray-400">
-        Loading product details...
-      </div>
+      <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-gray-400">
+          Loading product details...
+        </div>
+      </ProtectedRoute>
     );
   }
 
@@ -91,7 +94,8 @@ export default function ProductDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-12">
+    <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+      <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 pb-12">
       <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
             <h1
             className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
@@ -250,5 +254,6 @@ export default function ProductDetailsPage() {
         </Tabs>
       </motion.div>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner"
+import ProtectedRoute from "@/components/ProtectedRoute"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
@@ -102,9 +103,9 @@ export default function CartPage() {
 
   if (cart.length === 0) {
     return (
-      
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white">
-        <header className="flex justify-between items-center px-8 border-b border-gray-800">
+      <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+        <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white">
+        <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
             <h1
             className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
             onClick={function () {
@@ -164,26 +165,30 @@ export default function CartPage() {
             </ul>
             </nav>
         </header>
-        <img
-          src="/EmptyCart.png"
-          alt="Empty Cart"
-          className="ml-450 w-32 md:w-40 *mb-6 opacity-70"
-        />
-        <h2 className="text-2xl font-semibold text-yellow-500 mb-4">
-          Your cart is empty
-        </h2>
-        <Button
-          className="bg-yellow-500 text-black rounded-2xl hover:opacity-90"
-          onClick={() => router.push("/customer/browse-shop")}
-        >
-          Browse Shops
-        </Button>
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
+          <img
+            src="/EmptyCart.png"
+            alt="Empty Cart"
+            className="w-32 md:w-40 mb-6 opacity-70"
+          />
+          <h2 className="text-2xl font-semibold text-yellow-500 mb-4">
+            Your cart is empty
+          </h2>
+          <Button
+            className="bg-yellow-500 text-black rounded-2xl hover:opacity-90"
+            onClick={() => router.push("/customer/browse-shop")}
+          >
+            Browse Shops
+          </Button>
+        </div>
       </div>
+      </ProtectedRoute>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-12">
+    <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+      <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 pb-12">
       <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
             <h1
             className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
@@ -355,5 +360,6 @@ export default function CartPage() {
         </motion.div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

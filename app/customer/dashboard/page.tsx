@@ -86,7 +86,7 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-black via-gray-900 to-black text-white">
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-black via-gray-900 to-black text-white pt-0">
         {/* Navbar */}
         <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
             <h1

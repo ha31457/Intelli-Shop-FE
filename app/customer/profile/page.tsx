@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
+import ProtectedRoute from "@/components/ProtectedRoute"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
@@ -94,7 +95,8 @@ export default function ProfilePage() {
 
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+      <div className="min-h-screen bg-background text-foreground">
       <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
             <h1
             className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
@@ -184,5 +186,6 @@ export default function ProfilePage() {
         </Card>
       </motion.div>
     </div>
+    </ProtectedRoute>
   )
 }
