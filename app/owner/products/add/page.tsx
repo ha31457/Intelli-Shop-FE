@@ -21,7 +21,11 @@ export default function AddProductPage() {
     name: string;
     description: string;
     price: number;
+<<<<<<< HEAD
     stock: number;
+=======
+     stock: number;
+>>>>>>> 61b3f7ee726592c5509296cb3055cee610968948
     low_stock_threshold: number;   
   }
   const [product, setProduct] = useState<Product>({
