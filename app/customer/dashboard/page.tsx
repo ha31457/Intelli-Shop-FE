@@ -213,12 +213,12 @@ export default function DashboardPage() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {products.map((product) => (
-                        <Card key={product.id} className="bg-gray-900 border border-gray-800 shadow-lg hover:shadow-yellow-500/30 transition">
+                        <Card key={product.id} className="bg-gray-900 border border-gray-800 shadow-lg hover:shadow-yellow-500/30 transition cursor-pointer" onClick={() => router.push(`/customer/product/${product.id}`)}>
                             <CardContent className="p-6">
                                 <h4 className="text-lg font-semibold text-yellow-500">{product.name}</h4>
                                 <p className="text-gray-400 mt-2 text-sm line-clamp-2">{product.description}</p>
                                 <div className="mt-4 flex items-center justify-between">
-                                    <span className="text-xl font-bold text-white">${product.price.toFixed(2)}</span>
+                                    <span className="text-xl font-bold text-white">₹{product.price.toFixed(2)}</span>
                                     {product.stock <= product.low_stock_threshold ? (
                                         <span className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded-full">Low Stock</span>
                                     ) : (
