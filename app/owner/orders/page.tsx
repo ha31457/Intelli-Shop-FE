@@ -21,6 +21,23 @@ export default function OrdersPage() {
   useEffect(() => {
     async function fetchOrders() {
       // Replace this with API call
+      try {
+        const token = localStorage.getItem("token");
+        const resp = await fetch("http://localhost:8080/api/get-shop-orders", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!resp.ok) throw new Error("Failed to fetch orders");
+        const json = await resp.json();
+        setOrders(json.data);
+        setLoading(false);
+        return;
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      }
       const data: Order[] = [
         {
           id: 1001,
