@@ -219,8 +219,12 @@ export default function OrdersPage() {
       <h1 className="text-3xl text-yellow-500 font-bold mb-10 text-center">
         My Orders
       </h1>
-      <Button className="mb- rounded-2xl"><Link href={"#active-orders"}>Active Orders</Link></Button>
-      <Button className="mb-8 ml-5 rounded-2xl"><Link href={"#completed-orders"}>Completed Orders</Link></Button>
+      <div className="sticky top-0 z-50 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black py-4 mb-8 -mx-8 px-8">
+        <div className="flex gap-7">
+          <Button className="rounded-2xl"><Link href={"#active-orders"}>Active Orders</Link></Button>
+          <Button className="rounded-2xl"><Link href={"#completed-orders"}>Completed Orders</Link></Button>
+        </div>
+      </div>
 
       {loading ? (
         <p className="text-gray-400 text-center">Loading your orders...</p>
