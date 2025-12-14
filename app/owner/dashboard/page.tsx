@@ -9,14 +9,35 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner"
 import ProtectedRoute from "@/components/ProtectedRoute"
 import NotificationDrawer from "@/components/NotificationDrawer";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 
 export default function ShopDashboard() {
   const router = useRouter();
+  const [ownerName, setOwnerName] = useState("Owner");
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalOrders: 0,
   });
+
+  // Fetch owner name
+  useEffect(() => {
+    const response = fetch("http://localhost:8080/getUser", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      }
+    }).then(res => res.json())
+    .then(response => {
+      if(response.success){ 
+        setOwnerName(response.data.name)
+      }else{
+        toast.error("Session expired. Please login again.") 
+        setTimeout(() => router.push("/login"), 500)
+      }
+    })
+  }, [])
 
   // Dummy fetch simulation (replace with backend call)
   useEffect(() => {
@@ -61,9 +82,83 @@ export default function ShopDashboard() {
   }, []);
   
   const ShopName = localStorage.getItem("shopName") || "Shop";
+
+  const handleLogout = async () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
+    toast.success("Logged out successfully")
+    setTimeout((): void => {
+      router.push("/login")
+    }, 500)
+  }
+
   return (
-    <ProtectedRoute allowedRoles={["OWNER"]}>
-      <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black p-6 text-white">
+    // <ProtectedRoute allowedRoles={["OWNER"]}>
+      <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white pt-0">
+        <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
+          <h1
+            className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
+            onClick={function () {
+              return router.push("/owner/dashboard")
+            }}
+          >
+            IntelliShop
+          </h1>
+          <nav>
+            <ul className="flex gap-6 text-gray-300">
+              <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/owner/products")}
+              >
+                Products
+              </li>
+              <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/owner/orders")}
+              >
+                Shop Orders
+              </li>
+              <li>    
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="cursor-pointer">
+                      <AvatarImage src="/Profile.png" alt={ownerName} />
+                      <AvatarFallback>{ownerName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className="w-56 p-2">
+                    <DropdownMenuLabel>
+                      <div>
+                        <p className="font-medium">{ownerName}</p>
+                        <p className="text-sm text-muted-foreground">{ownerName}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem onClick={() => router.push("/owner/dashboard")}>
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/owner/orders")}>
+                      Shop Orders
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem onClick={() => router.push("/owner/shop/profile")}>
+                      Update Details
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </li>
+            </ul>
+          </nav>
+        </header>
+
+      <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{ShopName} Dashboard</h1> {/*TODO: Replace with shop name from backend*/}
@@ -140,7 +235,8 @@ export default function ShopDashboard() {
           </Card>
         </motion.div>
       </div>
+      </div>
     </div>
-    </ProtectedRoute>
+    // </ProtectedRoute>
   );
 }

@@ -11,6 +11,11 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Building2, MapPin, Upload, X, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useRouter } from "next/navigation";
+import ProtectedRoute from "@/components/ProtectedRoute"
 
 type Shop = {
   id: number;
@@ -416,7 +421,8 @@ export default function OwnerShopProfilePage() {
           </Card>
         </motion.div>
       </div>
-    </div>
+        </div>
+      </div>
     </ProtectedRoute>
   );
 }

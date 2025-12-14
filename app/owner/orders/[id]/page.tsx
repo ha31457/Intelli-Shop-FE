@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { toast } from "sonner"
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: number;
@@ -198,7 +201,8 @@ export default function OrderDetailsPage() {
           </CardContent>
         </Card>
       </motion.div>
-    </div>
+        </div>
+      </div>
     </ProtectedRoute>
   );
 }

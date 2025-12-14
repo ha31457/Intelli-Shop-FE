@@ -11,6 +11,8 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Upload } from "lucide-react";
 import { toast } from "sonner";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -62,9 +64,67 @@ export default function AddProductPage() {
     setLoading(false);
   };
 
+  const handleLogout = async () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
+    toast.success("Logged out successfully")
+    setTimeout((): void => {
+      router.push("/login")
+    }, 500)
+  }
+
   return (
     <ProtectedRoute allowedRoles={["OWNER"]}>
-    <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-10">
+      <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white pt-0">
+        <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
+          <h1
+            className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
+            onClick={() => router.push("/owner/dashboard")}
+          >
+            IntelliShop
+          </h1>
+          <nav>
+            <ul className="flex gap-6 text-gray-300">
+              <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/owner/products")}
+              >
+                Products
+              </li>
+              <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/owner/orders")}
+              >
+                Shop Orders
+              </li>
+              <li>    
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="cursor-pointer">
+                      <AvatarImage src="/Profile.png" />
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 p-2">
+                    <DropdownMenuItem onClick={() => router.push("/owner/dashboard")}>
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/owner/orders")}>
+                      Shop Orders
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/owner/shop/profile")}>
+                      Update Details
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        <div className="px-6 py-10">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Button

@@ -6,6 +6,10 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useRouter } from "next/navigation";
+import { toast } from "sonner"
 
 interface Notification {
   id: number;
@@ -65,7 +69,56 @@ export default function NotificationsPage() {
 
   return (
     <ProtectedRoute allowedRoles={["OWNER"]}>
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white px-8 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white pt-0">
+        <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
+          <h1
+            className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
+            onClick={() => router.push("/owner/dashboard")}
+          >
+            IntelliShop
+          </h1>
+          <nav>
+            <ul className="flex gap-6 text-gray-300">
+              <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/owner/products")}
+              >
+                Products
+              </li>
+              <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/owner/orders")}
+              >
+                Shop Orders
+              </li>
+              <li>    
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="cursor-pointer">
+                      <AvatarImage src="/Profile.png" />
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 p-2">
+                    <DropdownMenuItem onClick={() => router.push("/owner/dashboard")}>
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/owner/orders")}>
+                      Shop Orders
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/owner/shop/profile")}>
+                      Update Details
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        <div className="px-8 py-12">
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div className="flex items-center gap-3">
@@ -149,7 +202,8 @@ export default function NotificationsPage() {
           ))}
         </div>
       )}
-    </div>
+        </div>
+      </div>
     </ProtectedRoute>
   );
 }
