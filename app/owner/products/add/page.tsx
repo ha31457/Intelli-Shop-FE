@@ -9,24 +9,52 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { ArrowLeft, Upload } from "lucide-react";
+import { toast } from "sonner";
 
 export default function AddProductPage() {
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
+  interface Product {
+    shopid: number;
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    low_stock_threshold: number;   
+  }
+  const [product, setProduct] = useState<Product>({
+    shopid: parseInt(localStorage.getItem("shopId") || "0"),
+    name: "",
+    description: "",
+    price: 0,
+    stock: 0,
+    low_stock_threshold: 0,
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {  {/* create a backend call which actually stores the product..*/}
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Product added successfully! (Replace with backend API call)");
-    router.push("/owner/products");
+    setProduct({ ...product, shopid: parseInt(localStorage.getItem("shopId") || "0") });
+    console.log("product", product);
+    setLoading(true);
+    const resp = await fetch("http://localhost:8080/addProducts", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(product),
+    });
+    const { success, message, data } = await resp.json();
+    if(success){
+      toast.success(message);
+      router.push("/owner/products");
+    }else{
+      toast.error(message);
+      router.push("/owner/products/add");
+    }
+    setLoading(false);
   };
 
   return (
@@ -54,9 +82,11 @@ export default function AddProductPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Product Name */}
           <div>
-            <label className="block mb-2 text-sm font-semibold">Product Name</label>
+            <label className="block mb-2 text-sm font-semibold">Product Name <span className="text-red-500">*</span></label>
             <Input
               required
+              value={product.name}
+              onChange={(e) => setProduct({ ...product, name: e.target.value })}
               placeholder="Enter product name"
               className="rounded-xl bg-gray-800 text-white border-gray-700"
             />
@@ -64,10 +94,12 @@ export default function AddProductPage() {
 
           {/* Price */}
           <div>
-            <label className="block mb-2 text-sm font-semibold">Price (₹)</label>
+            <label className="block mb-2 text-sm font-semibold">Price (₹) <span className="text-red-500">*</span></label>
             <Input
               type="number"
               required
+              value={product.price || ""}
+              onChange={(e) => setProduct({ ...product, price: parseFloat(e.target.value) || 0 })}
               placeholder="Enter price"
               className="rounded-xl bg-gray-800 text-white border-gray-700"
             />
@@ -75,59 +107,42 @@ export default function AddProductPage() {
 
           {/* Stock */}
           <div>
-            <label className="block mb-2 text-sm font-semibold">Stock Quantity</label>
+            <label className="block mb-2 text-sm font-semibold">Stock Quantity <span className="text-red-500">*</span></label>
             <Input
               type="number"
               required
+              value={product.stock || ""}
+              onChange={(e) => setProduct({ ...product, stock: parseInt(e.target.value) || 0 })}
               placeholder="Enter stock quantity"
               className="rounded-xl bg-gray-800 text-white border-gray-700"
             />
           </div>
 
-          {/* Category */}
+          {/* Low Stock Threshold */}
           <div>
-            <label className="block mb-2 text-sm font-semibold">Category</label>
-            <Select>
-              <SelectTrigger className="rounded-xl bg-gray-800 text-white border-gray-700">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-gray-700 text-white">
-                <SelectItem value="clothing">Clothing</SelectItem>
-                <SelectItem value="footwear">Footwear</SelectItem>
-                <SelectItem value="accessories">Accessories</SelectItem>
-                <SelectItem value="electronics">Electronics</SelectItem>
-              </SelectContent>
-            </Select>
+            <label className="block mb-2 text-sm font-semibold">Low Stock Threshold <span className="text-red-500">*</span></label>
+            <Input
+              type="number"
+              required
+              value={product.low_stock_threshold || ""}
+              onChange={(e) => setProduct({ ...product, low_stock_threshold: parseInt(e.target.value) || 0 })}
+              placeholder="Enter low stock threshold"
+              className="rounded-xl bg-gray-800 text-white border-gray-700"
+            />
           </div>
 
           {/* Description */}
           <div className="md:col-span-2">
-            <label className="block mb-2 text-sm font-semibold">Description</label>
+            <label className="block mb-2 text-sm font-semibold">Description <span className="text-red-500">*</span></label>
             <Textarea
               required
+              value={product.description}
+              onChange={(e) => setProduct({ ...product, description: e.target.value })}
               placeholder="Enter product description"
               className="rounded-xl bg-gray-800 text-white border-gray-700 h-28"
             />
           </div>
 
-          {/* Image Upload */}
-          <div className="md:col-span-2">
-            <label className="block mb-2 text-sm font-semibold">Product Image</label>
-            <div className="flex items-center gap-6">
-              <label className="flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed border-gray-700 rounded-xl cursor-pointer hover:border-yellow-500">
-                <Upload className="h-8 w-8 text-gray-400" />
-                <span className="text-xs mt-2 text-gray-400">Upload</span>
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-              </label>
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-40 h-40 object-cover rounded-xl border border-gray-700"
-                />
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Submit Button */}
@@ -135,6 +150,7 @@ export default function AddProductPage() {
           <Button
             type="submit"
             className="bg-yellow-500 text-black font-semibold px-6 py-3 rounded-xl hover:opacity-90"
+            disabled={loading}
           >
             Add Product
           </Button>
