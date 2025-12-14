@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { ArrowLeft, Upload } from "lucide-react";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -54,9 +55,15 @@ export default function EditProductPage() {
     router.push("/owner/products");
   };
 
-  if (loading) return <p className="text-center text-gray-400">Loading product...</p>;
+  if (loading) return (
+    <ProtectedRoute allowedRoles={["OWNER"]}>
+      <p className="text-center text-gray-400">Loading product...</p>
+    </ProtectedRoute>
+  );
 
   return (
+    <ProtectedRoute allowedRoles={["OWNER"]}>
+    <ProtectedRoute allowedRoles={["OWNER"]}>
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-10">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">

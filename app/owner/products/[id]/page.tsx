@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowLeft, Edit, Trash } from "lucide-react";
 import { toast } from "sonner";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 interface Product {
   id: number;
@@ -120,5 +121,6 @@ export default function ViewProductPage() {
         </div>
       </motion.div>
     </div>
+    </ProtectedRoute>
   );
 }

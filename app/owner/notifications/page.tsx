@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 interface Notification {
   id: number;
@@ -63,6 +64,7 @@ export default function NotificationsPage() {
   }, []);
 
   return (
+    <ProtectedRoute allowedRoles={["OWNER"]}>
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white px-8 py-12">
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
@@ -148,5 +150,6 @@ export default function NotificationsPage() {
         </div>
       )}
     </div>
+    </ProtectedRoute>
   );
 }

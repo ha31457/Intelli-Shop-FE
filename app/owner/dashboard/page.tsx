@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner"
+import ProtectedRoute from "@/components/ProtectedRoute"
 import NotificationDrawer from "@/components/NotificationDrawer";
 
 
@@ -61,7 +62,8 @@ export default function ShopDashboard() {
   
   const ShopName = localStorage.getItem("shopName") || "Shop";
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black p-6 text-white">
+    <ProtectedRoute allowedRoles={["OWNER"]}>
+      <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black p-6 text-white">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{ShopName} Dashboard</h1> {/*TODO: Replace with shop name from backend*/}
@@ -139,5 +141,6 @@ export default function ShopDashboard() {
         </motion.div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

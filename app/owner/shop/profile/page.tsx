@@ -135,6 +135,7 @@ export default function OwnerShopProfilePage() {
   };
 
   return (
+    <ProtectedRoute allowedRoles={["OWNER"]}>
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-10">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8 flex items-end justify-between gap-4">
@@ -416,5 +417,6 @@ export default function OwnerShopProfilePage() {
         </motion.div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { Edit, Eye, Trash2, Plus } from "lucide-react";
 import path from "path";
 import { toast } from "sonner";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 interface Product {
   id: number;
@@ -188,5 +189,6 @@ export default function ProductListPage() {
         </div>
       )}
     </div>
+    </ProtectedRoute>
   );
 }

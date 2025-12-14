@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import ProtectedRoute from "@/components/ProtectedRoute"
 
 export default function RegisterShopPage() {
   const router = useRouter()
@@ -70,6 +71,7 @@ export default function RegisterShopPage() {
 
 
   return (
+    <ProtectedRoute allowedRoles={["OWNER"]}>
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-accent/10 via-background to-primary/10 px-4">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -114,5 +116,6 @@ export default function RegisterShopPage() {
         </Card>
       </motion.div>
     </div>
+    </ProtectedRoute>
   )
 }

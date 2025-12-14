@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 interface Order {
   id: number;
@@ -67,9 +68,14 @@ export default function OrdersPage() {
     fetchOrders();
   }, []);
 
-  if (loading) return <p className="text-center text-gray-400">Loading orders...</p>;
+  if (loading) return (
+    <ProtectedRoute allowedRoles={["OWNER"]}>
+      <p className="text-center text-gray-400">Loading orders...</p>
+    </ProtectedRoute>
+  );
 
   return (
+    <ProtectedRoute allowedRoles={["OWNER"]}>
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-10">
       {/* Header */}
       <div className="flex items-center justify-between mb-10">

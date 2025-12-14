@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { toast } from "sonner"
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 interface Product {
   id: number;
@@ -111,7 +112,8 @@ export default function OrderDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-8 py-12">
+    <ProtectedRoute allowedRoles={["OWNER"]}>
+      <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-8 py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -197,5 +199,6 @@ export default function OrderDetailsPage() {
         </Card>
       </motion.div>
     </div>
+    </ProtectedRoute>
   );
 }

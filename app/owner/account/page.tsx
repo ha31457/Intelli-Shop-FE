@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function AccountSettingsPage() {
   const [formData, setFormData] = useState({
@@ -23,6 +24,7 @@ export default function AccountSettingsPage() {
   };
 
   return (
+    <ProtectedRoute allowedRoles={["OWNER"]}>
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-12 flex justify-center">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -119,5 +121,6 @@ export default function AccountSettingsPage() {
         </Card>
       </motion.div>
     </div>
+    </ProtectedRoute>
   );
 }
