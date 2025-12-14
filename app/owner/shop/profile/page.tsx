@@ -9,18 +9,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, MapPin, Mail, Phone, Upload, X, Image as ImageIcon } from "lucide-react";
+import { Building2, MapPin, Upload, X, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
 type Shop = {
   id: number;
+  owner_id: number;
   name: string;
-  description: string;
   address: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  bannerUrl?: string;
-  logoUrl?: string;
+  shop_type: string;
+  description: string;
+  avg_rating: number;
 };
 
 export default function OwnerShopProfilePage() {
@@ -34,8 +33,7 @@ export default function OwnerShopProfilePage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [contactPhone, setContactPhone] = useState("");
+  const [shopType, setShopType] = useState("");
 
   // Media uploads (local previews)
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -45,19 +43,19 @@ export default function OwnerShopProfilePage() {
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const bannerPreview = useMemo(
-    () => (bannerFile ? URL.createObjectURL(bannerFile) : shop?.bannerUrl),
-    [bannerFile, shop?.bannerUrl]
+    () => (bannerFile ? URL.createObjectURL(bannerFile) : null),
+    [bannerFile]
   );
   const logoPreview = useMemo(
-    () => (logoFile ? URL.createObjectURL(logoFile) : shop?.logoUrl),
-    [logoFile, shop?.logoUrl]
+    () => (logoFile ? URL.createObjectURL(logoFile) : null),
+    [logoFile]
   );
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     // Fetch current shop profile (owner's shop)
-    fetch("http://localhost:8080/owner/shop", {
+    fetch("http://localhost:8080/getShopDetails", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -68,8 +66,7 @@ export default function OwnerShopProfilePage() {
           setName(s.name || "");
           setDescription(s.description || "");
           setAddress(s.address || "");
-          setContactEmail(s.contactEmail || "");
-          setContactPhone(s.contactPhone || "");
+          setShopType(s.shop_type || "");
         } else {
           toast.error(res?.message || "Failed to load shop profile");
         }
@@ -78,23 +75,19 @@ export default function OwnerShopProfilePage() {
         // Fallback demo data
         const demo: Shop = {
           id: 1,
+          owner_id: 1,
           name: "Auric Atelier",
           description:
             "Curated luxury essentials with timeless aesthetics. Crafted for the discerning.",
           address: "12, Crescent Park, Indiranagar, Bengaluru, KA",
-          contactEmail: "hello@auricatelier.com",
-          contactPhone: "+91 98765 43210",
-          bannerUrl:
-            "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1600&auto=format&fit=crop",
-          logoUrl:
-            "https://images.unsplash.com/photo-1611162616677-8b1f9762447f?q=80&w=400&auto=format&fit=crop",
+          shop_type: "Fashion",
+          avg_rating: 4.5,
         };
         setShop(demo);
         setName(demo.name);
         setDescription(demo.description);
         setAddress(demo.address);
-        setContactEmail(demo.contactEmail || "");
-        setContactPhone(demo.contactPhone || "");
+        setShopType(demo.shop_type);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -104,28 +97,25 @@ export default function OwnerShopProfilePage() {
       toast.error("Shop name is required");
       return;
     }
+    const payload = {
+      name, 
+      address,
+      shop_type: shopType,
+      description
+    }
 
     setSaving(true);
     const token = localStorage.getItem("token");
-
+    const shopId = localStorage.getItem("shopId")
     try {
-      // If your backend expects multipart for images:
-      const form = new FormData();
-      form.append("name", name);
-      form.append("description", description);
-      form.append("address", address);
-      form.append("contactEmail", contactEmail);
-      form.append("contactPhone", contactPhone);
-      if (bannerFile) form.append("banner", bannerFile);
-      if (logoFile) form.append("logo", logoFile);
 
-      const res = await fetch("http://localhost:8080/owner/shop", {
+      const res = await fetch(`http://localhost:8080/${shopId}/update`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
-          // Note: do NOT set Content-Type when sending FormData (browser will set boundary)
+          "Content-Type": "application/json",
         },
-        body: form,
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -154,13 +144,6 @@ export default function OwnerShopProfilePage() {
             Manage and personalize how your shop appears to customers.
           </p>
         </div>
-        <Button
-          onClick={handleSave}
-          disabled={saving || loading}
-          className="rounded-2xl bg-yellow-500 hover:opacity-90 transition px-5"
-        >
-          {saving ? "Saving..." : "Save Changes"}
-        </Button>
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -232,18 +215,22 @@ export default function OwnerShopProfilePage() {
                       {address || "Add your business address"}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-4 h-4 text-yellow-500" />
-                    <span className="text-gray-300">
-                      {contactEmail || "email@example.com"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-4 h-4 text-yellow-500" />
-                    <span className="text-gray-300">
-                      {contactPhone || "+91 90000 00000"}
-                    </span>
-                  </div>
+                  {shop && (
+                    <>
+                      <div className="flex items-center gap-3">
+                        <Building2 className="w-4 h-4 text-yellow-500" />
+                        <span className="text-gray-300">
+                          Type: {shop.shop_type || "Not set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-yellow-500">★</span>
+                        <span className="text-gray-300">
+                          Rating: {shop.avg_rating?.toFixed(1) || "0.0"}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -274,28 +261,17 @@ export default function OwnerShopProfilePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Contact Email</Label>
+                    <Label htmlFor="shop-type">Shop Type</Label>
                     <Input
-                      id="email"
-                      type="email"
-                      value={contactEmail}
-                      onChange={(e) => setContactEmail(e.target.value)}
-                      placeholder="hello@brand.com"
-                      className="bg-gray-950 border-gray-700 text-white rounded-xl"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Contact Phone</Label>
-                    <Input
-                      id="phone"
-                      value={contactPhone}
-                      onChange={(e) => setContactPhone(e.target.value)}
-                      placeholder="+91 9xxxx xxxxx"
+                      id="shop-type"
+                      value={shopType}
+                      onChange={(e) => setShopType(e.target.value)}
+                      placeholder="e.g., Fashion, Electronics, Grocery"
                       className="bg-gray-950 border-gray-700 text-white rounded-xl"
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="description">Short Description</Label>
+                    <Label htmlFor="description">Description</Label>
                     <Textarea
                       id="description"
                       value={description}

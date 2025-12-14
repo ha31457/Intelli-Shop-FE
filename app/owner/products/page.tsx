@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Edit, Eye, Trash2, Plus } from "lucide-react";
 import path from "path";
+import { toast } from "sonner";
 
 interface Product {
   id: number;
@@ -17,13 +18,41 @@ interface Product {
   price: number;
   stock: number;
   low_stock_threshold: number;
+  image?: string;
 }
+
+
 
 export default function ProductListPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
 
+  const deleteProduct = async (id: number) => {
+    const shopId = localStorage.getItem("shopId");
+    try {
+      const resp = await fetch(`http://localhost:8080/${shopId}/products/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await resp.json();
+        console.log("delete product data : ", data);
+
+        if (resp.ok && data.success) {
+          // Remove the deleted product from UI without needing a full refresh
+        setProducts((prev) => prev.filter((product) => product.id !== id));
+        toast.success(data.message);
+      } else {
+        toast.error(data.message || "Failed to delete product.");
+      }
+    } catch (err) {
+      console.error("Failed to delete product:", err);
+      toast.error("Failed to delete product. Please try again.");
+    }
+  };
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -113,7 +142,7 @@ export default function ProductListPage() {
                 </CardHeader>
                 <CardContent>
                   <img
-                    src={product.imageUrl || "https://via.placeholder.com/300"}
+                    src={product.image ? product.image : "https://via.placeholder.com/300.png?text=Product+Image"}
                     alt={product.name}
                     className="w-full h-40 object-cover rounded-xl mb-4"
                   />
@@ -124,7 +153,7 @@ export default function ProductListPage() {
                     ₹{product.price} | Stock: {product.stock}
                   </p>
                   <p className="text-sm text-gray-400 mb-4">
-                    Category: {product.category}
+                    Low Stock Threshold: {product.low_stock_threshold}
                   </p>
 
                   <div className="flex justify-between">
@@ -147,7 +176,7 @@ export default function ProductListPage() {
                       size="sm"
                       variant="destructive"
                       className="rounded-xl"
-                      onClick={() => alert("Delete product logic here")}
+                      onClick={() => deleteProduct(product.id)}
                     >
                       <Trash2 className="h-4 w-4 mr-1" /> Delete
                     </Button>

@@ -16,58 +16,41 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
+    id: "",
+    shopid: "",
     name: "",
+    description: "",
     price: "",
     stock: "",
-    category: "",
-    description: "",
-    image: "",
+    low_stock_threshold: "",
   });
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  // Fetch product details (replace with backend API call)
   useEffect(() => {
-    async function fetchProduct() {
-      // Example dummy data → replace with actual API
-      const product = {
-        name: "Sample Product",
-        price: "1200",
-        stock: "10",
-        category: "clothing",
-        description: "A premium cotton shirt.",
-        image: "",
-      };
-
-      setFormData(product);
-      setImagePreview(product.image || null);
-      setLoading(false);
-    }
-    fetchProduct();
+    const resp = fetch(`http://localhost:8080/api/product/${id}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data.data);
+        setFormData(data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch product:", err);
+        setLoading(false);
+      });
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCategoryChange = (value: string) => {
-    setFormData({ ...formData, category: value });
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        setFormData({ ...formData, image: reader.result as string });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Product updated successfully! (Replace with backend API call)");
+      alert("Product updated successfully! (Replace with backend API call)");
     router.push("/owner/products");
   };
 
@@ -134,22 +117,6 @@ export default function EditProductPage() {
             />
           </div>
 
-          {/* Category */}
-          <div>
-            <label className="block mb-2 text-sm font-semibold">Category</label>
-            <Select value={formData.category} onValueChange={handleCategoryChange}>
-              <SelectTrigger className="rounded-xl bg-gray-800 text-white border-gray-700">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-gray-700 text-white">
-                <SelectItem value="clothing">Clothing</SelectItem>
-                <SelectItem value="footwear">Footwear</SelectItem>
-                <SelectItem value="accessories">Accessories</SelectItem>
-                <SelectItem value="electronics">Electronics</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Description */}
           <div className="md:col-span-2">
             <label className="block mb-2 text-sm font-semibold">Description</label>
@@ -162,24 +129,6 @@ export default function EditProductPage() {
             />
           </div>
 
-          {/* Image Upload */}
-          <div className="md:col-span-2">
-            <label className="block mb-2 text-sm font-semibold">Product Image</label>
-            <div className="flex items-center gap-6">
-              <label className="flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed border-gray-700 rounded-xl cursor-pointer hover:border-yellow-500">
-                <Upload className="h-8 w-8 text-gray-400" />
-                <span className="text-xs mt-2 text-gray-400">Upload</span>
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-              </label>
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-40 h-40 object-cover rounded-xl border border-gray-700"
-                />
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Submit Button */}
