@@ -41,7 +41,7 @@ export default function ViewProductPage() {
         },
       });
       const data = await resp.json();
-      console.log("fetch product data : ", data);
+      console.log("fetch product data : ", data.data);
       setProduct(data.data);
       setLoading(false);
       // Replace with API call
@@ -56,6 +56,13 @@ export default function ViewProductPage() {
     toast.success("Logged out successfully")
     setTimeout((): void => {
       router.push("/login")
+    }, 500)
+  }
+
+  const handleEditProduct = async(product: Product) =>{
+    const encodedProduct = encodeURIComponent(JSON.stringify(product));
+    setTimeout((): void => {
+      router.push(`/owner/products/${product.id}/edit?product=${encodedProduct}`)
     }, 500)
   }
 
@@ -261,7 +268,7 @@ export default function ViewProductPage() {
         <div className="flex gap-3">
           <Button
             className="bg-yellow-500 text-black rounded-xl hover:opacity-90"
-            onClick={() => router.push(`/owner/products/${product.id}/edit`)}
+            onClick={() => handleEditProduct(product)}
           >
             <Edit className="mr-2 h-4 w-4" /> Edit
           </Button>
