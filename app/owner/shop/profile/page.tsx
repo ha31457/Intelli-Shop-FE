@@ -15,7 +15,6 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation";
-import ProtectedRoute from "@/components/ProtectedRoute"
 
 type Shop = {
   id: number;
@@ -421,7 +420,6 @@ export default function OwnerShopProfilePage() {
           </Card>
         </motion.div>
       </div>
-        </div>
       </div>
     </ProtectedRoute>
   );
