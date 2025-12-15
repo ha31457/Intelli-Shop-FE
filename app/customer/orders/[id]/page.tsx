@@ -70,7 +70,7 @@ export default function OrderDetailsPage() {
       return;
     }
 
-    fetch(`http://localhost:8080/api/getOrderDetails/${orderId}`, {
+    fetch(`http://localhost:8080/api/getOrderDetailsCustomer/${orderId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async (res) => {
@@ -125,63 +125,67 @@ export default function OrderDetailsPage() {
   }
 
   return (
-    <ProtectedRoute allowedRoles={["OWNER"]}>
+    <ProtectedRoute allowedRoles={["CUSTOMER"]}>
       <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-8 py-12">
       <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
-          <h1
+            <h1
             className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
-            onClick={() => router.push("/owner/dashboard")}
-          >
+            onClick={function () {
+                return router.push("/customer/dashboard")
+            }}
+            >
             IntelliShop
-          </h1>
-          <nav>
+            </h1>
+            <nav>
             <ul className="flex gap-6 text-gray-300">
-              <li
+                <li
                 className="hover:text-yellow-500 cursor-pointer"
-                onClick={() => router.push("/owner/products")}
-              >
-                Products
-              </li>
-              <li
+                onClick={() => router.push("/customer/browse-shop")}
+                >
+                Browse Shops
+                </li>
+                <li
                 className="hover:text-yellow-500 cursor-pointer"
-                onClick={() => router.push("/owner/orders")}
-              >
-                Shop Orders
-              </li>
-              <li>    
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Avatar className="cursor-pointer">
-                      <AvatarImage src="/Profile.png" alt={ownerName} />
-                      <AvatarFallback>{ownerName.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 p-2">
-                    <DropdownMenuLabel>
-                      <div>
-                        <p className="font-medium">{ownerName}</p>
-                        <p className="text-sm text-muted-foreground">{ownerName}</p>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => router.push("/owner/dashboard")}>
-                      Dashboard
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/owner/orders")}>
-                      Shop Orders
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/owner/shop/profile")}>
-                      Update Details
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-500">
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </li>
+                onClick={() => router.push("/customer/orders")}
+                >
+                My Orders
+                </li>
+                <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/customer/cart")}
+                >
+                Cart
+                </li>
+                <li>    
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Avatar className="cursor-pointer">
+                            <AvatarImage src="/Profile.png" />
+                            </Avatar>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="w-56 p-2">
+                          
+                            <DropdownMenuItem onClick={() => router.push("/customer/dashboard")}>
+                            Dashboard
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push("/customer/orders")}>
+                            My Orders
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem onClick={() => router.push("/customer/profile")}>
+                            Update Details
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                            Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </li>
             </ul>
-          </nav>
+            </nav>
         </header>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <h1 className="text-3xl text-yellow-500 font-bold mb-8 text-center">Order Details</h1>
@@ -190,12 +194,6 @@ export default function OrderDetailsPage() {
               <CardTitle className="text-2xl font-semibold text-white">Order #{order.orderId}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* <div>
-                <h2 className="text-lg font-semibold text-yellow-400 mb-2">Order Details</h2>
-                <p>👤 {order.customerName}</p>
-                <p>📧 {order.customerEmail}</p>
-                {order.deliveryMode === "DELIVERY" && <p>🏠 {order.customerAddress}</p>}
-              </div> */}
 
               <div>
                 <h2 className="text-lg font-semibold text-yellow-400 mb-2">Order Information</h2>
@@ -211,44 +209,10 @@ export default function OrderDetailsPage() {
                   <p> Unit Price : {order.items[0]?.unitPrice}</p>
                 </div>
               </div>
-
-              <div className="flex flex-wrap gap-3 pt-4">
-                {["PLACED", "PROCESSING", "COMPLETED", "CANCELLED"].map((s) => (
-                  <Button key={s} onClick={() => handleStatusUpdate(s)}
-                    className={`rounded-xl transition px-6 bg-yellow-500 text-black${order.status === s ? "bg-yellow-500 text-black" : "bg-gray-800 hover:bg-yellow-200 text-black"}`}>
-                    {s}
-                  </Button>
-                ))}
-              </div>
             </CardContent>
           </Card>
         </motion.div>
       </div>
     </ProtectedRoute>
   );
-  
-  function handleStatusUpdate(newStatus: string) {
-    if (!orderId) return;
-    const token = localStorage.getItem("token");
-
-    const payload = {
-      orderId: orderId, 
-      status: newStatus 
-    }
-    console.log(payload)
-    fetch(`http://localhost:8080/api/update-order-status`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.success) {
-          console.log("success false")
-          toast.success(`Order status updated to ${newStatus}`);
-          setOrder((prev) => (prev ? { ...prev, status: newStatus } : prev));
-        } else toast.error("Failed to update status");
-      })
-      .catch(() => toast.error("Something went wrong"));
-  }
 }
