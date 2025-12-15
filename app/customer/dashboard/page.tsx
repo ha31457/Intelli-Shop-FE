@@ -217,7 +217,7 @@ export default function DashboardPage() {
                             <CardContent className="p-6">
                                 <h4 className="text-lg font-semibold text-yellow-500">{product.name}</h4>
                                 <p className="text-gray-400 mt-2 text-sm line-clamp-2">{product.description}</p>
-                                <div className="mt-4 flex items-center justify-between">
+                                <div className="mt-4 flex items-center justify-between"> 
                                     <span className="text-xl font-bold text-white">₹{product.price.toFixed(2)}</span>
                                     {product.stock <= product.low_stock_threshold ? (
                                         <span className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded-full">Low Stock</span>
