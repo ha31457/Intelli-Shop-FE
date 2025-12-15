@@ -10,12 +10,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { toast } from "sonner"
 
 interface Order {
-  id: number;
-  customer: string;
-  date: string;
-  total: number;
-  status: "Pending" | "Shipped" | "Delivered" | "Cancelled";
+  orderId: number;
+  totalAmount: number;
+  shopName: string;
+  status: "PLACED" | "COMPLETED";
 }
+
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -60,33 +60,42 @@ export default function OrdersPage() {
         });
         if (!resp.ok) throw new Error("Failed to fetch orders");
         const json = await resp.json();
-        setOrders(json.data);
+        console.log(json);
+
+        if (json.success && json.data) {
+          const allOrders = [
+            ...(json.data.activeOrders || []),
+            ...(json.data.completedOrders || []),
+          ];
+          setOrders(allOrders);
+        } else {
+          setOrders([]);
+        }
+
         setLoading(false);
+
         return;
       } catch (err) {
         console.error("Error fetching orders:", err);
       }
       const data: Order[] = [
         {
-          id: 1001,
-          customer: "John Doe",
-          date: "2025-09-13",
-          total: 2400,
-          status: "Pending",
+          orderId: 1001,
+          totalAmount: 2400,
+          shopName: "Default shop",
+          status: "PLACED",
         },
         {
-          id: 1002,
-          customer: "Jane Smith",
-          date: "2025-09-12",
-          total: 1500,
-          status: "Shipped",
+          orderId: 1002,
+          totalAmount: 1200,
+          shopName: "Default shop",
+          status: "COMPLETED",
         },
         {
-          id: 1003,
-          customer: "Michael Lee",
-          date: "2025-09-11",
-          total: 3200,
-          status: "Delivered",
+          orderId: 1003,
+          totalAmount: 150  ,
+          shopName: "Default shop",
+          status: "PLACED",
         },
       ];
       setOrders(data);
@@ -247,37 +256,36 @@ export default function OrdersPage() {
           <tbody>
             {orders.map((order) => (
               <tr
-                key={order.id}
+                key={order.orderId}
                 className="border-b border-gray-700 hover:bg-gray-800 transition"
               >
-                <td className="p-4">#{order.id}</td>
-                <td className="p-4">{order.customer}</td>
-                <td className="p-4">{order.date}</td>
-                <td className="p-4">₹ {order.total}</td>
+                <td className="p-4">#{order.orderId}</td>
+                <td className="p-4">{order.shopName}</td>
+                <td className="p-4">—</td>
+                <td className="p-4">₹ {order.totalAmount}</td>
+
                 <td className="p-4">
                   <span
                     className={`px-3 py-1 rounded-full text-sm ${
-                      order.status === "Pending"
+                      order.status === "PLACED"
                         ? "bg-yellow-500/20 text-yellow-400"
-                        : order.status === "Shipped"
-                        ? "bg-blue-500/20 text-blue-400"
-                        : order.status === "Delivered"
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-red-500/20 text-red-400"
+                        : "bg-green-500/20 text-green-400"
                     }`}
                   >
                     {order.status}
                   </span>
                 </td>
+
                 <td className="p-4">
                   <Button
                     variant="outline"
                     className="border-gray-600 text-white rounded-xl hover:bg-gray-700"
-                    onClick={() => router.push(`/owner/orders/${order.id}`)}
+                    onClick={() => router.push(`/owner/orders/${order.orderId}`)}
                   >
                     View
                   </Button>
                 </td>
+
               </tr>
             ))}
           </tbody>
