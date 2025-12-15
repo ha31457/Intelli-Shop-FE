@@ -1,5 +1,4 @@
 # Intelli-Shop Frontend
-[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/ha31457/Intelli-Shop-FE)
 
 Intelli-Shop is a modern, full-featured e-commerce platform frontend built with Next.js. It provides a dual-interface system for both customers and shop owners, offering a comprehensive suite of tools for a seamless shopping and management experience.
 
