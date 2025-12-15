@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 export default function ShopDashboard() {
   const router = useRouter();
   const [ownerName, setOwnerName] = useState("Owner");
+  const [shopName, setShopName] = useState("Shop");
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalOrders: 0,
@@ -81,7 +82,12 @@ export default function ShopDashboard() {
     });
   }, []);
   
-  const ShopName = localStorage.getItem("shopName") || "Shop";
+  useEffect(() => {
+    const ShopName = localStorage.getItem("shopName");
+    if (ShopName) {
+      setShopName(ShopName);
+    }
+  }, []);  
 
   const handleLogout = async () =>{
     localStorage.removeItem("token")
@@ -93,7 +99,7 @@ export default function ShopDashboard() {
   }
 
   return (
-    // <ProtectedRoute allowedRoles={["OWNER"]}>
+    <ProtectedRoute allowedRoles={["OWNER"]}>
       <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white pt-0">
         <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
           <h1
@@ -155,21 +161,14 @@ export default function ShopDashboard() {
                 </DropdownMenu>
               </li>
             </ul>
-          </nav>
+          </nav>  
         </header>
 
       <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">{ShopName} Dashboard</h1> {/*TODO: Replace with shop name from backend*/}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full bg-gray-900 border border-gray-700 hover:bg-gray-800"
-        >
-          {/* <Bell className="h-6 w-6 text-yellow-500" /> */}
-          <NotificationDrawer />
-        </Button>
+        <h1 className="text-3xl font-bold">{shopName} Dashboard</h1>
+        <NotificationDrawer />
       </div>
 
       {/* Stats Section */}
