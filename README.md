@@ -37,6 +37,12 @@ The application is split into two primary user roles, each with its own dedicate
 
 ## 🚀 Technology Stack
 
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=nextjs,typescript,tailwindcss" />
+  </a>
+</p>
+
 -   **Framework**: [Next.js](https://nextjs.org/) 15 (App Router & Turbopack)
 -   **Language**: [TypeScript](https://www.typescriptlang.org/)
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/) with a custom premium theme.
