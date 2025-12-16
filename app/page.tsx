@@ -47,33 +47,33 @@ export default function LandingPage() {
       </section>
 
       {/* About Nymera (mirroring IntelliShop format) */}
-      <section id="about-Nymera" className="py-20 px-6 md:px-16 bg-background text-foreground">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+      {/* <section id="about-Nymera" className="py-20 px-6 md:px-16 bg-background text-foreground"> */}
+        {/* <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center"> */}
           {/* Illustration on left for contrast */}
-          <div className="rounded-2xl shadow-xl bg-muted h-80 w-80 flex items-center justify-center">
-            <span className="text-xl text-muted-foreground">
-              <img 
-                src="./Nymera_Light.png" 
-                alt="Nymera Logo"
-                className="rounded-2xl max-h-80 max-w-100"/>
-            </span>
-          </div>
-          <div className="order-1 md:order-2">
-            <h2 className="text-4xl font-semibold mb-6">About Nymera</h2>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              Founded by <span className="font-medium text-primary">Harsh Dushyantbhai Pandya</span>, 
-              Nymera is dedicated to crafting innovative digital products 
-              that reduce human intervention, minimize errors, and unlock insights that go 
-              beyond human capabilities.
-            </p>
-            <ul className="space-y-4 text-muted-foreground">
-              <li>✔️ Innovative SaaS product development</li>
-              <li>✔️ Focus on automation & efficiency</li>
-              <li>✔️ Mission to help businesses save time & grow</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+          {/* <div className="rounded-2xl shadow-xl bg-muted h-80 w-80 flex items-center justify-center"> */}
+            {/* <span className="text-xl text-muted-foreground"> */}
+              {/* <img  */}
+                {/* src="./Nymera_Light.png"  */}
+                {/* alt="Nymera Logo" */}
+                {/* className="rounded-2xl max-h-80 max-w-100"/> */}
+            {/* </span> */}
+          {/* </div> */}
+          {/* <div className="order-1 md:order-2"> */}
+            {/* <h2 className="text-4xl font-semibold mb-6">About Nymera</h2> */}
+            {/* <p className="text-muted-foreground leading-relaxed mb-6"> */}
+              {/* Founded by <span className="font-medium text-primary">Harsh Dushyantbhai Pandya</span>,  */}
+              {/* Nymera is dedicated to crafting innovative digital products  */}
+              {/* that reduce human intervention, minimize errors, and unlock insights that go  */}
+              {/* beyond human capabilities. */}
+            {/* </p> */}
+            {/* <ul className="space-y-4 text-muted-foreground"> */}
+              {/* <li>✔️ Innovative SaaS product development</li> */}
+              {/* <li>✔️ Focus on automation & efficiency</li> */}
+              {/* <li>✔️ Mission to help businesses save time & grow</li> */}
+            {/* </ul> */}
+          {/* </div> */}
+        {/* </div> */}
+      {/* </section> */}
     </div>
   );
 }

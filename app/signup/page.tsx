@@ -46,9 +46,9 @@ export default function SignupPage() {
         localStorage.setItem("role", data.role);
         
         if(role === "OWNER"){
-          setTimeout(() => router.push("/register-shop"), 400);
+          setTimeout(() => router.push("/owner/register-shop"), 400);
         }else if(role === "CUSTOMER"){
-          setTimeout(() => router.push("/dashboard"), 400);
+          setTimeout(() => router.push("/customer/dashboard"), 400);
         }
       }else{
         toast.error(message)
@@ -68,11 +68,11 @@ export default function SignupPage() {
     }
     if (role === "OWNER") {
       setTimeout(() => {
-        router.push("/register-shop")
+        router.push("/owner/register-shop")
     }, 500)
     } else {
       setTimeout(() => {
-        router.push("/dashboard")
+        router.push("/customer/dashboard")
     }, 500)
     }
   }
