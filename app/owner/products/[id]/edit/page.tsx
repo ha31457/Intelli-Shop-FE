@@ -17,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import ProductDetailsPage from "@/app/customer/product/[id]/page";
 
 /** Product Interface */
 interface Product {

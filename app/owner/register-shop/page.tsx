@@ -10,8 +10,8 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import ProtectedRoute from "@/components/ProtectedRoute"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export default function RegisterShopPage() {
   const router = useRouter()
@@ -71,6 +71,14 @@ export default function RegisterShopPage() {
       }
     }
 
+  const handleLogout = async () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
+    toast.success("Logged out successfully")
+    setTimeout((): void => {
+      router.push("/login")
+    }, 500)
+  }
 
   return (
     <ProtectedRoute allowedRoles={["OWNER"]}>

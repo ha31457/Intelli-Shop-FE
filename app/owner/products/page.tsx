@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Edit, Eye, Trash2, Plus } from "lucide-react";
-import path from "path";
 import { toast } from "sonner";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"

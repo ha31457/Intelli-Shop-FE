@@ -29,7 +29,7 @@ type Shop = {
 export default function OwnerShopProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
+  const [ownerName, setOwnerName] = useState("Owner");
   // Base state (what's saved on server)
   const [shop, setShop] = useState<Shop | null>(null);
 
@@ -38,6 +38,7 @@ export default function OwnerShopProfilePage() {
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
   const [shopType, setShopType] = useState("");
+  const router = useRouter();
 
   // Media uploads (local previews)
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -57,7 +58,6 @@ export default function OwnerShopProfilePage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     // Fetch current shop profile (owner's shop)
     fetch("http://localhost:8080/getShopDetails", {
       headers: { Authorization: `Bearer ${token}` },
@@ -95,6 +95,23 @@ export default function OwnerShopProfilePage() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    const response = fetch("http://localhost:8080/getUser", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      }
+    }).then(res => res.json())
+    .then(response => {
+      if(response.success){ 
+        setOwnerName(response.data.name)
+      }else{
+        toast.error("Session expired. Please login again.") 
+        setTimeout(() => router.push("/login"), 500)
+      }
+    })
+  }, [])
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -138,9 +155,80 @@ export default function OwnerShopProfilePage() {
     }
   };
 
+  const handleLogout = async () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("_rle")
+    toast.success("Logged out successfully")
+    setTimeout((): void => {
+      router.push("/login")
+    }, 500)
+  }
+
   return (
     <ProtectedRoute allowedRoles={["OWNER"]}>
     <div className="min-h-screen bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-black text-white px-6 py-10">
+    <header className="flex justify-between items-center px-8 py-4 border-b border-gray-800">
+          <h1
+            className="text-2xl font-extrabold text-yellow-500 cursor-pointer"
+            onClick={function () {
+              return router.push("/owner/dashboard")
+            }}
+          >
+            IntelliShop
+          </h1>
+          <nav>
+            <ul className="flex gap-6 text-gray-300">
+              <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/owner/products")}
+              >
+                Products
+              </li>
+              <li
+                className="hover:text-yellow-500 cursor-pointer"
+                onClick={() => router.push("/owner/orders")}
+              >
+                Shop Orders
+              </li>
+              <li>    
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="cursor-pointer">
+                      <AvatarImage src="/Profile.png" alt={ownerName} />
+                      <AvatarFallback>{ownerName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className="w-56 p-2">
+                    <DropdownMenuLabel>
+                      <div>
+                        <p className="font-medium">{ownerName}</p>
+                        <p className="text-sm text-muted-foreground">{ownerName}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem onClick={() => router.push("/owner/dashboard")}>
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/owner/orders")}>
+                      Shop Orders
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem onClick={() => router.push("/owner/shop/profile")}>
+                      Update Details
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </li>
+            </ul>
+          </nav>  
+        </header>
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8 flex items-end justify-between gap-4">
         <div>

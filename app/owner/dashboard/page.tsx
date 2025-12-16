@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner"
 import ProtectedRoute from "@/components/ProtectedRoute"

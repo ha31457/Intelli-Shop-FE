@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import ProtectedRoute from "@/components/ProtectedRoute"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 
 export default function ProfilePage() {
@@ -126,11 +126,33 @@ export default function ProfilePage() {
                 >
                 Cart
                 </li>
-                <li
-                className="hover:text-yellow-500 cursor-pointer"
-                onClick={handleLogout}
-                >
-                Logout
+                <li>    
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Avatar className="cursor-pointer">
+                            <AvatarImage src="/Profile.png" />
+                            </Avatar>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="w-56 p-2">
+                          
+                            <DropdownMenuItem onClick={() => router.push("/customer/dashboard")}>
+                            Dashboard
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push("/customer/orders")}>
+                            My Orders
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem onClick={() => router.push("/customer/profile")}>
+                            Update Details
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                            Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </li>
             </ul>
             </nav>
